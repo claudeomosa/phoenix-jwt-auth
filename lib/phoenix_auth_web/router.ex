@@ -10,6 +10,7 @@ defmodule PhoenixAuthWeb.Router do
 
     get "/", AuthController, :index
     post "/register", AuthController, :register
+    post "/auth/login", AuthController, :login
   end
 
   # Enables LiveDashboard only for development
