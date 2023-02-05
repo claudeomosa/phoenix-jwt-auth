@@ -5,12 +5,23 @@ defmodule PhoenixAuthWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug PhoenixAuthWeb.JWTAuthPlug
+  end
+
+  scope "/api/auth", PhoenixAuthWeb do
+    pipe_through :auth
+    get "/", AuthController, :get
+#    post "/register", AuthController, :register
+#    post "/login", AuthController, :login
+  end
+
   scope "/api", PhoenixAuthWeb do
     pipe_through :api
 
     get "/", AuthController, :index
     post "/register", AuthController, :register
-    post "/auth/login", AuthController, :login
+    post "/login", AuthController, :login
   end
 
   # Enables LiveDashboard only for development

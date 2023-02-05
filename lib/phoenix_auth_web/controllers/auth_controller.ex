@@ -30,7 +30,7 @@ defmodule PhoenixAuthWeb.AuthController do
       extra_claims = %{"user_id" => user.id}
       {:ok, token, _claims} = PhoenixAuthWeb.JwtToken.generate_and_sign(extra_claims, signer)
       IO.inspect("#token #{token}")
-      with {:ok, claims} <- PhoenixAuthWeb.JwtToken.verify_and_validate(token, signer) do
+      with {:ok, _claims} <- PhoenixAuthWeb.JwtToken.verify_and_validate(token, signer) do
         conn
         |> render("login.json", %{success: true, message: "successfully logged in", token: token})
       end
@@ -41,4 +41,9 @@ defmodule PhoenixAuthWeb.AuthController do
     end
   end
 
+  def get(conn, _params) do
+#    IO.inspect(conn)
+    conn
+    |> render("data.json", %{data: conn.assigns.current_user} )
+  end
 end
