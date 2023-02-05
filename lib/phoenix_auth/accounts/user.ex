@@ -1,6 +1,7 @@
 defmodule PhoenixAuth.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  import Pbkdf2
 
   schema "users" do
     field :email, :string
@@ -21,5 +22,14 @@ defmodule PhoenixAuth.Accounts.User do
     |> unique_constraint(:username)
     |> update_change(:email, fn email -> String.downcase(email) end)
     |> update_change(:username, &(String.downcase(&1)))
+    |> hash_password()
+  end
+
+
+  defp hash_password(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} -> change(changeset, Pbkdf2.add_hash(password, hash_key: :password))
+      _ -> changeset
+    end
   end
 end
