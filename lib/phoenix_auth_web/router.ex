@@ -9,6 +9,7 @@ defmodule PhoenixAuthWeb.Router do
     pipe_through :api
 
     get "/", AuthController, :index
+    post "/register", AuthController, :register
   end
 
   # Enables LiveDashboard only for development
