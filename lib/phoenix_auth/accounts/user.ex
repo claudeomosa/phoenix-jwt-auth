@@ -3,6 +3,9 @@ defmodule PhoenixAuth.Accounts.User do
   import Ecto.Changeset
   import Pbkdf2
 
+  @derive {Jason.Encoder, except: [:__meta__]}
+
+
   schema "users" do
     field :email, :string
     field :password, :string
