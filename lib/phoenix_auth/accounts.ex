@@ -38,6 +38,17 @@ defmodule PhoenixAuth.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a single user by username
+  """
+  def get_user_by_username(username) do
+    from(
+      user in User,
+      where: user.username == ^username
+    )
+    |> Repo.one()
+  end
+
+  @doc """
   Creates a user.
 
   ## Examples
