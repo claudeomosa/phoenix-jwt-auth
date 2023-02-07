@@ -37,7 +37,14 @@ defmodule PhoenixAuth.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
-  def get_user(id), do: Repo.get(User, id)
+  def get_user(id) do
+    from(
+      user in User,
+      where: user.id == ^id,
+      select: [:email, :id, :username, :inserted_at, :updated_at]
+      )
+    |> Repo.one()
+  end
 
 
   @doc """
