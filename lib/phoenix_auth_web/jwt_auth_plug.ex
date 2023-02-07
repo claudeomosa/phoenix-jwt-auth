@@ -1,5 +1,6 @@
 defmodule PhoenixAuthWeb.JWTAuthPlug do
   alias PhoenixAuth.Accounts
+  alias PhoenixAuth.AuthTokens
   alias Accounts.User
 
   import Plug.Conn
@@ -16,8 +17,18 @@ defmodule PhoenixAuthWeb.JWTAuthPlug do
       token = bearer |> String.split(" ") |> List.last()
       signer = Joken.Signer.create("HS256", "LrdMlz1Tf+f97KqVMF60lQnZjE81qawZmGJl9oVw06/DgjTWivaIlXwm2FkSAMRg")
 
-      with {:ok, %{"user_id" => user_id}} <- PhoenixAuthWeb.JwtToken.verify_and_validate(token, signer),
+      with {:ok, %{"user_id" => user_id}} <-
+             PhoenixAuthWeb.JwtToken.verify_and_validate(token, signer),
            %User{} = user <-Accounts.get_user(user_id) do
+
+        if AuthTokens.get_auth_token_by_token(token) != nil do
+          conn
+          |> put_status(401)
+          |> halt
+          else
+            conn
+            |> assign(:current_user, user)
+        end
 
         conn
         |> assign(:current_user, user)

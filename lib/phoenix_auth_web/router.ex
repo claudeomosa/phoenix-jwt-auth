@@ -12,8 +12,7 @@ defmodule PhoenixAuthWeb.Router do
   scope "/api/auth", PhoenixAuthWeb do
     pipe_through :auth
     get "/", AuthController, :get
-#    post "/register", AuthController, :register
-#    post "/login", AuthController, :login
+    delete "/", AuthController, :delete
   end
 
   scope "/api", PhoenixAuthWeb do

@@ -3,7 +3,13 @@ defmodule PhoenixAuthWeb.AuthController do
   alias PhoenixAuth.Accounts
   alias PhoenixAuth.Accounts.User
   alias PhoenixAuthWeb.Utils
+  alias PhoenixAuth.AuthTokens
+  alias PhoenixAuth.AuthTokens.AuthToken
+  alias PhoenixAuth.Repo
+  import Plug.Conn
+  import Ecto.Query, warn: false
   import Joken
+
   def index(conn, _params) do
     conn
     |> render("ack.json", %{success: true, message: "hello there"})
@@ -46,4 +52,24 @@ defmodule PhoenixAuthWeb.AuthController do
     conn
     |> render("data.json", %{data: conn.assigns.current_user} )
   end
+
+  def delete(conn, _params) do
+    case Ecto.build_assoc(conn.assigns.current_user, :auth_tokens, %{token: get_token(conn)}) |> Repo.insert!() do
+      %AuthToken{} -> conn
+                      |> render("ack.json", %{success: true, message: "user successfully logged out"})
+      _ -> conn
+           |> render("error.json", %{error: Utils.internal_server_error()})
+    end
+
+  end
+
+  defp get_token(conn) do
+     bearer = get_req_header(conn, "authorization")
+              |> List.first()
+     if bearer == nil do
+        ""
+     else
+        bearer |> String.split(" ") |> List.last()
+  end
+end
 end
